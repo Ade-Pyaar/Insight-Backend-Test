@@ -33,7 +33,7 @@ def client(app):
     return app.test_client()
 
 
-@patch("services.OpenAIUtility.get_answer")
+@patch("insait.services.OpenAIUtility.get_answer")
 def test_post_question(mock_open_ai, client):
 
     mock_open_ai.return_value = "Mocked answer"

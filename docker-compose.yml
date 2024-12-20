@@ -22,7 +22,7 @@ services:
       - db
     ports:
       - "8000:8000"
-    command: uvicorn app:asgi_app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn insait.app:asgi_app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   postgres_data:
