@@ -15,9 +15,9 @@ Before running the Flask app in Docker, make sure you have the following install
 
 If you don't have `make` installed, you can still execute the individual Docker commands as described below.
 
-## Local Setup
+## How to setup and run the project locally.
 
-To set up and run the Flask app in Docker, follow the steps below.
+To set up and run the Flask app in your local environment, follow the steps below.
 
 ### Clone the Repository
 
@@ -30,64 +30,66 @@ cd Insight-Backend-Test
 
 Create a .env file in the root directory of the project. A sample is provided in the `.env.example` with the required keys
 
-### Using Makefile Commands
+### Build and run the docker image
 
-The Makefile simplifies the process of interacting with Docker Compose and Alembic for managing your Flask app. Below are the available commands you can run with make. If you do not have make installed, you can always copy the Docker commands from the descriptions and run them manually.
+The following command are to be executed one after the order.
+The original command are being abstracted by using `make`. This makes the commands simple and easy to remember
 
-1. Build Docker Image
-   This command builds the Flask app Docker image.
+The Makefile simplifies the process of interacting with Docker Compose and Alembic for managing your Flask app. Below are the available commands you can run with make.
+
+> Note: If you do not have make installed, you can always copy the Docker commands from the `Makefile` and run them directly.
+
+#### 1. Build Docker Image
+
+The first step after cloning the repo and creating `.env` file is to build the docker image. Run the command below in the terminal to start the building process.
 
 ```bash
 make build
 ```
 
-2. Run Docker Image
-   This command runs the Flask app Docker image.
+> If you do not have `make` installed, run the command below instead
+
+```bash
+docker compose -f docker-compose.yml build
+```
+
+#### 2. Run Docker Image
+
+Once the docker image has been built with the command above, you can run it with the command below
 
 ```bash
 make run
 ```
 
-3. Build and run the Docker Image
-   This command build the docker image and then runs it after the build has been completed
+> If you do not have `make` installed, run the command below instead
+
+```bash
+docker compose -f docker-compose.yml up --no-build --abort-on-container-exit --remove-orphans
+```
+
+#### Build and run the image with a single command (Alternative approach)
+
+Instead of running two command to build and run the image, it can be done with a single command instead.
+This command will build the image and run it automatically after building
 
 ```bash
 make build-run
 ```
 
-4. Make migrations
-   After the container has been built (or when it is running), the command below can be executed to create database tables using Alembic
+> If you do not have `make` installed, run the command below instead
 
 ```bash
-make migrate
+docker compose -f docker-compose.yml up --build
 ```
-
-5. Run Test
-   To run the test using pytest, run the below command
-
-```bash
-make test
-```
-
-6. Shutdown the container
-   To stop the container, run the below command
-
-```bash
-make down
-```
-
-### Manual Docker Commands
-
-If you don't have make installed, you can open up the make file, copy out the docker command under the make command you want to execute and run it directly in your terminal.
 
 ### Making requests
 
-Once the docker image is running, you can access the `/ask`anedpoint by making a request to `http://localhost:8000/ask`
+Once the docker image is running, you can access the `/ask` endpoint by making a POST request to `http://localhost:8000/ask`
 A sample payload is show below
 
 ```json
 {
-  "question": "In 250 characters, what is Flask in Python?"
+  "question": "In 250 characters, what is Django in Python?"
 }
 ```
 
@@ -100,4 +102,48 @@ A sample response is shown below
   "id": 4,
   "question": "In 250 characters, what is Django?"
 }
+```
+
+### Making migrations
+
+If any changes were make to the `Question` class inside the `insait/models.py` file, and the changes are to reflect in the database, then the command below is what is needed.
+
+> Before running the command, a migration message should be added to the `Makefile` (if using the `mak` approach). The migration message will replace `"Initial migration"` that is inside the `Makefile`. The migration message should be de detailed
+
+```bash
+make migrate
+```
+
+> If you do not have `make` installed, run the command below instead, while replacing `"Initial migration"` with the intended migration message
+
+```bash
+docker-compose exec flask-app alembic revision --autogenerate -m "Initial migration"
+```
+
+### Running Tests
+
+The repo has 3 test cases included. To run these tests ore any other test added to the `insait/tes_app.py`, the command below can be used
+
+```bash
+make test
+```
+
+> If you do not have `make` installed, run the command below instead
+
+```bash
+docker-compose exec flask-app pytest
+```
+
+### Shutting down the docker container
+
+To stop the container when it's no longer needed, run the command below
+
+```bash
+make down
+```
+
+> If you do not have `make` installed, run the command below instead
+
+```bash
+docker compose -f docker-compose.yml down --remove-orphans
 ```
