@@ -19,13 +19,12 @@ class OpenAIUtility:
     def get_answer(self, question: str) -> str:
         """Get an answer to the question from OpenAI."""
         try:
-            # question = f"In less than 250 characters"
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini", messages=[{"role": "user", "content": question}]
             )
+            return response.choices[0].message.content
+
         except Exception as e:
             logger.error("Error from OpenAI: %s", e)
             # pylint: disable=raise-missing-from
             raise BadRequest(description="Error when generating answer to the question")
-
-        return response.choices[0].message.content or ""

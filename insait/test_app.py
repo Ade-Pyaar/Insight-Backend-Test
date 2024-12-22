@@ -53,3 +53,33 @@ def test_post_question(mock_open_ai, client):
     assert question_in_db is not None
     assert question_in_db.question == "What is Flask?"
     assert question_in_db.answer == "Mocked answer"
+
+
+@patch("insait.services.OpenAIUtility.get_answer")
+def test_openai_method_was_called(mock_open_ai, client):
+
+    mock_open_ai.return_value = "Mocked answer"
+
+    response = client.post("/ask", json={"question": "What is Flask?"})
+    assert response.status_code == 201
+    data = response.get_json()
+    assert "id" in data
+    assert "created_at" in data
+    assert "question" in data
+    assert "answer" in data
+    assert data["question"] == "What is Flask?"
+    assert data["answer"] == "Mocked answer"
+
+    # Verify that the question was saved in the database
+    question_in_db = Question.query.filter_by(id=data["id"]).first()
+    assert question_in_db is not None
+    assert question_in_db.question == "What is Flask?"
+    assert question_in_db.answer == "Mocked answer"
+
+    # Assert that OpenAIUtility get_answer was called with correct parameters
+    mock_open_ai.assert_called_once_with(question="What is Flask?")
+
+
+def test_post_question_invalid(client):
+    response = client.post("/ask", json={"question": ""})
+    assert response.status_code == 400
