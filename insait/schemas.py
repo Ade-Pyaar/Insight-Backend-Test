@@ -4,7 +4,7 @@ from pydantic import BaseModel, constr
 
 
 class QuestionRequest(BaseModel):
-    question: constr(min_length=5, max_length=255)
+    question: constr(min_length=5, max_length=1024)
 
 
 # Define a Pydantic model for the response
