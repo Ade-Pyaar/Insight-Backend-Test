@@ -2,7 +2,7 @@ import logging
 import os
 
 from openai import OpenAI
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 logger = logging.getLogger(__name__)
 
@@ -27,4 +27,6 @@ class OpenAIUtility:
         except Exception as e:
             logger.error("Error from OpenAI: %s", e)
             # pylint: disable=raise-missing-from
-            raise BadRequest(description="Error when generating answer to the question")
+            raise InternalServerError(
+                description="Error when generating answer to the question"
+            )
