@@ -2,7 +2,7 @@ import logging
 import os
 
 from openai import OpenAI
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import InternalServerError
 
 logger = logging.getLogger(__name__)
 
